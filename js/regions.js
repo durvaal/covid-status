@@ -1,6 +1,6 @@
 function saveRegionData(index) {
   const regionDataToSave = {
-    [REGIONS_DATA[index]["Country_text"]]: [
+    [REGIONS_DATA[index].country]: [
       REGIONS_DATA[index],
     ],
   };
@@ -10,11 +10,11 @@ function saveRegionData(index) {
     // Quando não existe nenhuma região salva
     localStorage.setItem("REGIONS_DATA_STORAGE", JSON.stringify(regionDataToSave));
   } else {
-    const regionDataHasSaved = REGIONS_DATA_STORAGE[REGIONS_DATA[index]["Country_text"]];
+    const regionDataHasSaved = REGIONS_DATA_STORAGE[REGIONS_DATA[index].country];
 
     if (regionDataHasSaved) {
       // Quando já existe a região salva, um novo objeto é salvo na lista dessa região
-      REGIONS_DATA_STORAGE[REGIONS_DATA[index]["Country_text"]].push(REGIONS_DATA[index]);
+      REGIONS_DATA_STORAGE[REGIONS_DATA[index].country].push(REGIONS_DATA[index]);
       
       localStorage.setItem("REGIONS_DATA_STORAGE", JSON.stringify(REGIONS_DATA_STORAGE));
     } else {

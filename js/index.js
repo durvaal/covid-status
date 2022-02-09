@@ -1,5 +1,5 @@
 const API_BASE_URL = "https://covid-19.dataflowkit.com/v1";
-const MAPS_API_KEY = "";
+const MAPS_API_KEY = "AIzaSyBJFe7jnULxnkhH1-ipKmeQ4dHQdete3E8";
 const COVID_STATUS_TYPE = {
   ALL: "ALL",
   WORLD: "WORLD",
@@ -47,7 +47,9 @@ function initRegionsMapChart() {
 
 function drawRegionsMap() {
   const data = google.visualization.arrayToDataTable(CHART_DATA);
-  const options = {};
+  const options = {
+    colorAxis: { colors: ["#0d6efd", "#ffc107", "#e31b23"] },
+  };
   const chart = new google.visualization.GeoChart(document.getElementById("regions-chart"));
   
   chart.draw(data, options);
@@ -65,14 +67,45 @@ function finishLoading() {
 };
 
 function handleWorldCovidStatusData(data) {
-  $("#world-active-cases-text").text(data["Active Cases_text"]);
-  $("#world-new-cases-text").text(data["New Cases_text"]);
-  $("#world-new-deaths-text").text(data["New Deaths_text"]);
-  $("#world-total-cases-text").text(data["Total Cases_text"]);
-  $("#world-total-deaths-text").text(data["Total Deaths_text"]);
-  $("#world-total-recovered-text").text(data["Total Recovered_text"]);
-  $("#world-last-update").text(data["Last Update"]);
+  const region = mapApiData(data);
+  
+  $("#world-active-cases-text").text(region.activeCases);
+  $("#world-new-cases-text").text(region.newCases);
+  $("#world-new-deaths-text").text(region.newDeaths);
+  $("#world-total-cases-text").text(region.totalCases);
+  $("#world-total-deaths-text").text(region.totalDeaths);
+  $("#world-total-recovered-text").text(region.totalRecovered);
+  $("#world-last-update").text(region.totalRecovered);
+
   finishLoading();
+};
+
+function formatStringToNumber(string) {
+  let number = 0;
+
+  if (!string || string === "N/A") {
+    return number;
+  }
+
+  string = string.replaceAll(",", "");
+  string = string.replaceAll("+", "");
+  
+  number = Number.parseInt(string, 10);
+
+  return number;
+}
+
+function mapApiData(region) {
+  return {
+    country: region["Country_text"],
+    activeCases: region["Active Cases_text"],
+    newCases: region["New Cases_text"],
+    newDeaths: region["New Deaths_text"],
+    totalCases: region["Total Cases_text"],
+    totalDeaths: region["Total Deaths_text"],
+    totalRecovered: region["Total Recovered_text"],
+    lastUpdate: region["Last Update"],
+  };
 };
 
 function convertedRegionsApiDataToChartData(apiData) {
@@ -83,15 +116,15 @@ function convertedRegionsApiDataToChartData(apiData) {
    */
   apiData.forEach((region) => {
     chartData.push([
-      region["Country_text"],
-      region["Country_text"],
-      `Casos ativos: ${region["Active Cases_text"] || 'N/A'}
-       Novos casos: ${region["New Cases_text"] || 'N/A'}
-       Mortes: ${region["New Deaths_text"] || 'N/A'}
-       Total de casos: ${region["Total Cases_text"] || 'N/A'}
-       Total de mortes: ${region["Total Deaths_text"] || 'N/A'}
-       Total de recuperados: ${region["Total Recovered_text"] || 'N/A'}
-       Data de atualização: ${region["Last Update"] ? new Date(region["Last Update"]).toLocaleString("PT-BR") : 'N/A'}`
+      region.country,
+      formatStringToNumber(region.activeCases),
+      `Casos ativos: ${region.activeCases || "N/A"}
+       Novos casos: ${region.newCases || "N/A"}
+       Mortes: ${region.newDeaths|| "N/A"}
+       Total de casos: ${region.totalCases || "N/A"}
+       Total de mortes: ${region.totalDeaths || "N/A"}
+       Total de recuperados: ${region.totalRecovered || "N/A"}
+       Última atualização: ${region.lastUpdate ? new Date(region.lastUpdate).toLocaleString("PT-BR") : "N/A"}`
     ]);
   });
 
@@ -106,56 +139,56 @@ function populateWorldStatusSection() {
 function populateRegionsStatusSection() {
   $(".carousel-inner").empty();
   $.each(REGIONS_DATA, function (index, region) {
-    $(".carousel-inner").append(`<div class="carousel-item ${index === 0 ? 'active' : ''}">
+    $(".carousel-inner").append(`<div class="carousel-item ${index === 0 ? "active" : ""}">
       <div class="carousel-item-fake"></div>
       <div class="carousel-caption d-none d-md-block">
         <div class="card mb-4 rounded-3 shadow-sm">
-          <div class="card-header py-3 text-white bg-dark border-dark">
-            <h4 class="my-0 fw-normal">${region["Country_text"]}</h4>
+          <div class="card-header py-3 text-primary border-primary">
+            <h4 class="my-0 fw-normal">${region.country}</h4>
           </div>
           <div class="card-body">
             <div class="row">
               <div class="col-6 text-end">
-                <span>Casos ativos</span>
+                <span class="text-muted">Casos ativos</span>
               </div>
               <div class="col-6 text-start">
-                <span><b>${region["Active Cases_text"] || 'N/A'}</b></span>
+                <span class="text-primary"><b>${region.activeCases || "N/A"}</b></span>
               </div>
               <div class="col-6 text-end">
-                <span>Novos casos</span>
+                <span class="text-muted">Novos casos</span>
               </div>
               <div class="col-6 text-start">
-                <span><b>${region["New Cases_text"] || 'N/A'}</b></span>
+                <span class="text-primary"><b>${region.newCases || "N/A"}</b></span>
               </div>
               <div class="col-6 text-end">
-                <span>Mortes</span>
+                <span class="text-muted">Mortes</span>
               </div>
               <div class="col-6 text-start">
-                <span><b>${region["New Deaths_text"] || 'N/A'}</b></span>
+                <span class="text-primary"><b>${region.newDeaths || "N/A"}</b></span>
               </div>
               <div class="col-6 text-end">
-                <span>Total de casos</span>
+                <span class="text-muted">Total de casos</span>
               </div>
               <div class="col-6 text-start">
-                <span><b>${region["Total Cases_text"] || 'N/A'}</b></span>
+                <span class="text-primary"><b>${region.totalCases || "N/A"}</b></span>
               </div>
               <div class="col-6 text-end">
-                <span>Total de mortes</span>
+                <span class="text-muted">Total de mortes</span>
               </div>
               <div class="col-6 text-start">
-                <span><b>${region["Total Recovered_text"] || 'N/A'}</b></span>
+                <span class="text-primary"><b>${region.totalDeaths || "N/A"}</b></span>
               </div>
               <div class="col-6 text-end">
-                <span>Total de recuperados</span>
+                <span class="text-muted">Total de recuperados</span>
               </div>
               <div class="col-6 text-start">
-                <span><b>${region["Total Recovered_text"] || 'N/A'}</b></span>
+                <span class="text-primary"><b>${region.totalRecovered || "N/A"}</b></span>
               </div>
               <div class="col-6 text-end">
-                <span>Data de atualização</span>
+                <span class="text-muted">Última atualização</span>
               </div>
               <div class="col-6 text-start">
-                <span><b>${region["Last Update"] ? new Date(region["Last Update"]).toLocaleString("PT-BR") : 'N/A'}</b></span>
+                <span class="text-primary"><b>${region.lastUpdate ? new Date(region.lastUpdate).toLocaleString("PT-BR") : "N/A"}</b></span>
               </div>
             </div>
             <button type="button" class="btn btn-lg btn-outline-primary my-2 btn-save" onclick="saveRegionData(${index})">Salvar Informações</button>
@@ -167,7 +200,7 @@ function populateRegionsStatusSection() {
 };
 
 function handleAllCovidStatusData(regionsData) {
-  REGIONS_DATA = regionsData;
+  REGIONS_DATA = regionsData.map((region) => mapApiData(region));
   populateWorldStatusSection();
   populateRegionsStatusSection();
 };
