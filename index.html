@@ -20,7 +20,7 @@
           </a>
 
           <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-            <a class="py-2 text-dark text-decoration-none" href="#">Sobre</a>
+            <a class="py-2 text-dark text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">Sobre</a>
           </nav>
         </div>
 
@@ -34,34 +34,34 @@
         <div class="row row-cols-12 text-center">
           <div class="col">
             <div class="card mb-4 rounded-3 shadow-sm">
-              <div class="card-header py-3 text-white bg-dark border-dark">
+              <div class="card-header py-3 text-primary border-primary">
                 <h4 class="my-0 fw-normal">Situação Mundial</h4>
               </div>
               <div class="card-body">
                 <div class="regions-world-data opacity-0">
                   <div class="row">
                     <div class="col-md-2 col-4">
-                      <h4><b id="world-active-cases-text"></b></h4>
+                      <h4 class="text-primary"><b id="world-active-cases-text"></b></h4>
                       <p class="text-muted">casos ativos</p>
                     </div>
                     <div class="col-md-2 col-4">
-                      <h4><b id="world-new-cases-text"></b></h4>
+                      <h4 class="text-primary"><b id="world-new-cases-text"></b></h4>
                       <p class="text-muted">novos casos</p>
                     </div>
                     <div class="col-md-2 col-4">
-                      <h4><b id="world-new-deaths-text"></b></h4>
+                      <h4 class="text-primary"><b id="world-new-deaths-text"></b></h4>
                       <p class="text-muted">mortes</p>
                     </div>
                     <div class="col-md-2 col-4">
-                      <h4><b id="world-total-cases-text"></b></h4>
+                      <h4 class="text-primary"><b id="world-total-cases-text"></b></h4>
                       <p class="text-muted">total de casos</p>
                     </div>
                     <div class="col-md-2 col-4">
-                      <h4><b id="world-total-deaths-text"></b></h4>
+                      <h4 class="text-primary"><b id="world-total-deaths-text"></b></h4>
                       <p class="text-muted">total de mortes</p>
                     </div>
                     <div class="col-md-2 col-4">
-                      <h4><b id="world-total-recovered-text"></b></h4>
+                      <h4 class="text-primary"><b id="world-total-recovered-text"></b></h4>
                       <p class="text-muted">total de recuperados</p>
                     </div>
                   </div>
@@ -82,7 +82,7 @@
         <div class="row row-cols-12 mb-3 text-center">
           <div class="col">
             <div class="card mb-4 rounded-3 shadow-sm">
-              <div class="card-header py-3 text-white bg-dark border-dark">
+              <div class="card-header py-3 text-primary border-primary">
                 <h4 class="my-0 fw-normal">Regiões</h4>
               </div>
               <div class="card-body">
@@ -124,6 +124,25 @@
           </div>
         </div>
       </footer>
+    </div>
+
+    <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModal" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="aboutModal">Mais informações</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Covid Status tem o intuito de apresentar a situação mundial da Covid.</p>
+            <p>Além disso, traz a possibilidade de salvar os dados de qualquer região, quantas vezes for necessário, para que possam ser analizadas posteriormente.</p>
+            <p>A fonte de dados é o Dataflow Kit API, para mais informações acesse: <a href="https://covid-19.dataflowkit.com/">https://covid-19.dataflowkit.com/</a>.</p>
+          </div>
+          <div class="modal-footer d-flex justify-content-center">
+            <button type="button" class="btn btn-lg btn-outline-primary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script type="text/javascript" src="js/index.js"></script>
