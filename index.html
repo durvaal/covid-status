@@ -145,6 +145,27 @@
       </div>
     </div>
 
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+      <div id="saveWithSuccessToast" class="toast hide bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">Tudo certo!</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          A informação foi salva com sucesso!
+        </div>
+      </div>
+      <div id="notSaveWithSuccessToast" class="toast hide bg-warning text-white" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">Algo deu errado!</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          A região selecionada já foi salva. Tente outra região diferente ou a mesma região com uma data de atualização diferente.
+        </div>
+      </div>
+    </div>
+
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/regions.js"></script>
   </body>
