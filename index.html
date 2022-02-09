@@ -14,13 +14,15 @@
     <div class="container py-2">
       <header>
         <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
-          <a href="#" class="d-flex align-items-center text-dark text-decoration-none">        
+          <a href="index.html" class="d-flex align-items-center text-dark text-decoration-none">        
             <img class="mb-2" src="./assets/coronavirus_black_24dp.svg" alt="" width="48" height="48">
             <span class="fs-4">Covid Status</span>
           </a>
 
           <nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
-            <a class="py-2 text-dark text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">Sobre</a>
+            <a class="nav-link py-2 text-dark text-decoration-none active" aria-current="page" href="index.html">Página Inicial</a>
+            <a class="nav-link py-2 text-dark text-decoration-none" href="regions.html">Regiões Salvas</a>
+            <a class="nav-link py-2 text-dark text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">Sobre</a>
           </nav>
         </div>
 
@@ -74,6 +76,11 @@
                   </div>
                 </div>
                 <div id="regions-chart" class="regions-chart"></div>
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <p class="text-muted">Navegue/clique sobre o mapa para obter mais informações.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -87,6 +94,10 @@
               </div>
               <div class="card-body">
                 <div class="row mb-3 text-center">
+                  <div class="col-12">
+                    <p class="text-muted">Clique em "Salvar Informações", isso o torna capaz de analisar gráficos por região.</p>
+                    <p class="text-muted">Acesse a página "Regiões Salvas" para obter mais informações.</p>
+                  </div>
                   <div class="col-12">
                     <div id="carouselRegions" class="carousel carousel-dark slide" data-bs-ride="carousel">
                       <div class="carousel-inner">
@@ -148,16 +159,16 @@
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
       <div id="saveWithSuccessToast" class="toast hide bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
-          <strong class="me-auto">Tudo certo!</strong>
+          <strong class="me-auto">Tudo certo</strong>
           <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
           A informação foi salva com sucesso!
         </div>
       </div>
-      <div id="notSaveWithSuccessToast" class="toast hide bg-warning text-white" role="alert" aria-live="assertive" aria-atomic="true">
+      <div id="notSaveWithSuccessToast" class="toast hide bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
-          <strong class="me-auto">Algo deu errado!</strong>
+          <strong class="me-auto">Algo deu errado</strong>
           <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
