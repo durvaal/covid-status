@@ -4,9 +4,15 @@ const COVID_STATUS_TYPE = {
   ALL: "ALL",
   WORLD: "WORLD",
 };
-
 let REGIONS_DATA = [];
-let CHART_DATA = [["", ""]];
+
+function showSaveWithSuccessToast() {
+  $("#saveWithSuccessToast").toast("show");
+};
+
+function showNotSaveWithSuccessToast() {
+  $("#notSaveWithSuccessToast").toast("show");
+};
 
 function xhttpAssincrono(callBackFunction, type) {
   const xhttp = new XMLHttpRequest();
@@ -36,34 +42,29 @@ function xhttpAssincrono(callBackFunction, type) {
   xhttp.send();
 };
 
-function initRegionsMapChart() {
+function initRegionsMapChart(chartData) {
   google.charts.load("current", {
     packages: ["geochart"],
     mapsApiKey: MAPS_API_KEY,
   });
-
-  google.charts.setOnLoadCallback(drawRegionsMap);
 };
 
-function drawRegionsMap() {
-  const data = google.visualization.arrayToDataTable(CHART_DATA);
+function loadRegionsMapChart(chartData) {
+  initRegionsMapChart();
+
+  google.charts.setOnLoadCallback(function() {
+    drawRegionsMap(chartData);
+  });
+};
+
+function drawRegionsMap(chartData) {
+  const data = google.visualization.arrayToDataTable(chartData);
   const options = {
     colorAxis: { colors: ["#0d6efd", "#ffc107", "#e31b23"] },
   };
   const chart = new google.visualization.GeoChart(document.getElementById("regions-chart"));
   
   chart.draw(data, options);
-};
-
-function initLoading() {
-  $(".regions-world-data").fadeOut();
-  $(".regions-loading").fadeIn();
-};
-
-function finishLoading() {
-  $(".regions-world-data").removeClass("opacity-0");
-  $(".regions-world-data").fadeIn();
-  $(".regions-loading").fadeOut();
 };
 
 function handleWorldCovidStatusData(data) {
@@ -80,21 +81,6 @@ function handleWorldCovidStatusData(data) {
   finishLoading();
 };
 
-function formatStringToNumber(string) {
-  let number = 0;
-
-  if (!string || string === "N/A") {
-    return number;
-  }
-
-  string = string.replaceAll(",", "");
-  string = string.replaceAll("+", "");
-  
-  number = Number.parseInt(string, 10);
-
-  return number;
-}
-
 function mapApiData(region) {
   return {
     country: region["Country_text"],
@@ -108,7 +94,7 @@ function mapApiData(region) {
   };
 };
 
-function convertedRegionsApiDataToChartData(apiData) {
+function getConvertedRegionsApiDataToChartData(apiData) {
   const chartData = [["Região", "Total de Casos", { role: "tooltip" }]];
   
   /**
@@ -116,7 +102,7 @@ function convertedRegionsApiDataToChartData(apiData) {
    */
   apiData.forEach((region) => {
     chartData.push([
-      region.country,
+      region.country || "N/A",
       formatStringToNumber(region.activeCases),
       `Casos ativos: ${region.activeCases || "N/A"}
        Novos casos: ${region.newCases || "N/A"}
@@ -131,20 +117,20 @@ function convertedRegionsApiDataToChartData(apiData) {
   return chartData;
 };
 
-function populateWorldStatusSection() {
-  CHART_DATA = convertedRegionsApiDataToChartData(REGIONS_DATA);
-  initRegionsMapChart();
+function populateWorldStatusSection(regionsData) {
+  REGIONS_DATA = regionsData;
+  loadRegionsMapChart(getConvertedRegionsApiDataToChartData(regionsData));
 };
 
-function populateRegionsStatusSection() {
+function populateRegionsStatusSection(regionsData) {
   $(".carousel-inner").empty();
-  $.each(REGIONS_DATA, function (index, region) {
+  $.each(regionsData, function (index, region) {
     $(".carousel-inner").append(`<div class="carousel-item ${index === 0 ? "active" : ""}">
       <div class="carousel-item-fake"></div>
       <div class="carousel-caption d-none d-md-block">
         <div class="card mb-4 rounded-3 shadow-sm">
           <div class="card-header py-3 text-primary border-primary">
-            <h4 class="my-0 fw-normal">${region.country}</h4>
+            <h4 class="my-0 fw-normal">${region.country || "N/A"}</h4>
           </div>
           <div class="card-body">
             <div class="row">
@@ -200,9 +186,11 @@ function populateRegionsStatusSection() {
 };
 
 function handleAllCovidStatusData(regionsData) {
-  REGIONS_DATA = regionsData.map((region) => mapApiData(region));
-  populateWorldStatusSection();
-  populateRegionsStatusSection();
+  // Alguns objetos não retornam o lastUpdate totalizando 7 campos, o objeto completo possui 8 campos, e tem objetos que possuem 1 campo
+  const regionsDataFiltered = regionsData.filter((region) => Object.entries(region).length >= 7).map((region) => mapApiData(region));
+
+  populateWorldStatusSection(regionsDataFiltered);
+  populateRegionsStatusSection(regionsDataFiltered);
 };
 
 function getWorldCovidStatus() {
@@ -213,6 +201,43 @@ function getWorldCovidStatus() {
 function getAllCovidStatus() {
   initLoading();
   xhttpAssincrono(handleAllCovidStatusData, COVID_STATUS_TYPE.ALL);
+};
+
+function saveRegionData(index) {
+  const regionDataToSave = {
+    [REGIONS_DATA[index].country]: [
+      REGIONS_DATA[index],
+    ],
+  };
+  const REGIONS_DATA_STORAGE = JSON.parse(localStorage.getItem("REGIONS_DATA_STORAGE"));
+
+  // Quando não existe nenhuma região salva
+  if (!REGIONS_DATA_STORAGE) {
+    localStorage.setItem("REGIONS_DATA_STORAGE", JSON.stringify(regionDataToSave));
+    showSaveWithSuccessToast();
+  } else {
+    const regionDataHasSaved = REGIONS_DATA_STORAGE[REGIONS_DATA[index].country];
+
+    // Quando já existe a região salva, um novo objeto é salvo na lista dessa região
+    if (regionDataHasSaved) {
+      const hasRegionDataWithSameLastUpdateValue = REGIONS_DATA_STORAGE[REGIONS_DATA[index].country].some((region) => region.lastUpdate === REGIONS_DATA[index].lastUpdate);
+
+      if (hasRegionDataWithSameLastUpdateValue) {
+        showNotSaveWithSuccessToast();
+      } else {
+        REGIONS_DATA_STORAGE[REGIONS_DATA[index].country].push(REGIONS_DATA[index]);
+      
+        localStorage.setItem("REGIONS_DATA_STORAGE", JSON.stringify(REGIONS_DATA_STORAGE));
+        showSaveWithSuccessToast();
+      }
+    } else {
+      // Quando a região não existe mas já existe outra região, a nova região é concatenada as demais regiões
+      const NEW_REGIONS_DATA_STORAGE = Object.assign(REGIONS_DATA_STORAGE, regionDataToSave);
+
+      localStorage.setItem("REGIONS_DATA_STORAGE", JSON.stringify(NEW_REGIONS_DATA_STORAGE));
+      showSaveWithSuccessToast();
+    }
+  }
 };
 
 $(window).resize(function(){

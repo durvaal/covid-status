@@ -1,44 +1,87 @@
-function showSaveWithSuccessToast() {
-  $("#saveWithSuccessToast").toast("show");
+function deleteWithSuccessToast() {
+  $("#deleteWithSuccessToast").toast("show");
 };
 
-function showNotSaveWithSuccessToast() {
-  $("#notSaveWithSuccessToast").toast("show");
+function initBarChart() {
+  google.charts.load("current", { "packages": ["bar"] });
 };
 
-function saveRegionData(index) {
-  const regionDataToSave = {
-    [REGIONS_DATA[index].country]: [
-      REGIONS_DATA[index],
-    ],
-  };
-  const REGIONS_DATA_STORAGE = JSON.parse(localStorage.getItem("REGIONS_DATA_STORAGE"));
+function loadMapChart(index, informations) {
+  initBarChart();
+  google.charts.setOnLoadCallback(function () {
+    drawMap(index, informations);
+  });
+};
 
-  // Quando não existe nenhuma região salva
-  if (!REGIONS_DATA_STORAGE) {
-    localStorage.setItem("REGIONS_DATA_STORAGE", JSON.stringify(regionDataToSave));
-    showSaveWithSuccessToast();
+function drawMap(index, informations) {
+  const data = google.visualization.arrayToDataTable(informations);
+  const options = {};
+  const chart = new google.charts.Bar(document.getElementById(`region-chart-${index}`));
+
+  chart.draw(data, google.charts.Bar.convertOptions(options));
+};
+
+function getConvertedRegionInformationsToChartData(regionInformations) {
+  const chartData = [["Data de atualização", "Total de casos", "Total de mortes", "Total de recuperados"]];
+
+  regionInformations.forEach((region) => {
+    chartData.push([
+      region.lastUpdate ? new Date(region.lastUpdate).toLocaleString("PT-BR") : "N/A",
+      formatStringToNumber(region.totalCases),
+      formatStringToNumber(region.totalDeaths),
+      formatStringToNumber(region.totalRecovered),
+    ]);
+  });
+
+  return chartData;
+};
+
+function populateRegionsSection(REGIONS_DATA_STORAGE) {
+  $("#regions-informations").empty();
+
+  if (!Object.entries(REGIONS_DATA_STORAGE).length) {
+    $("#regions-informations-alert").removeClass("d-none");
   } else {
-    const regionDataHasSaved = REGIONS_DATA_STORAGE[REGIONS_DATA[index].country];
+    $.each(Object.entries(REGIONS_DATA_STORAGE), function (index, region) {
+      const [country, informations] = region;
 
-    // Quando já existe a região salva, um novo objeto é salvo na lista dessa região
-    if (regionDataHasSaved) {
-      const hasRegionDataWithSameLastUpdateValue = REGIONS_DATA_STORAGE[REGIONS_DATA[index].country].filter((region) => region.lastUpdate === REGIONS_DATA[index].lastUpdate);
+      $("#regions-informations").append(`<div class="col-12">
+        <div class="card mb-4 rounded-3 shadow-sm">
+          <div class="card-header py-3 text-primary border-primary">
+            <h4 class="my-0 fw-normal">${country || "N/A"}</h4>
+          </div>
+          <div class="card-body">
+            <div id="region-chart-${index}" class="regions-chart"></div>
+            <button type="button" class="btn btn-lg btn-outline-primary my-4 btn-save" onclick="deleteRegionData('${country}')">Excluir Informações</button>
+          </div>
+        </div>
+      </div>`);
 
-      if (hasRegionDataWithSameLastUpdateValue) {
-        showNotSaveWithSuccessToast();
-      } else {
-        REGIONS_DATA_STORAGE[REGIONS_DATA[index].country].push(REGIONS_DATA[index]);
-      
-        localStorage.setItem("REGIONS_DATA_STORAGE", JSON.stringify(REGIONS_DATA_STORAGE));
-        showSaveWithSuccessToast();
-      }
-    } else {
-      // Quando a região não existe mas já existe outra região, a nova região é concatenada as demais regiões
-      const NEW_REGIONS_DATA_STORAGE = Object.assign(REGIONS_DATA_STORAGE, regionDataToSave);
-
-      localStorage.setItem("REGIONS_DATA_STORAGE", JSON.stringify(NEW_REGIONS_DATA_STORAGE));
-      showSaveWithSuccessToast();
-    }
+      loadMapChart(index, getConvertedRegionInformationsToChartData(informations));
+    });
   }
 };
+
+function deleteRegionData(country) {
+  const REGIONS_DATA_STORAGE = JSON.parse(localStorage.getItem("REGIONS_DATA_STORAGE")) || {};
+  delete REGIONS_DATA_STORAGE[country];
+
+  localStorage.setItem("REGIONS_DATA_STORAGE", JSON.stringify(REGIONS_DATA_STORAGE));
+
+  getRegionsDataStorage();
+  deleteWithSuccessToast();
+};
+
+function getRegionsDataStorage() {
+  const REGIONS_DATA_STORAGE = JSON.parse(localStorage.getItem("REGIONS_DATA_STORAGE")) || {};
+  populateRegionsSection(REGIONS_DATA_STORAGE);
+};
+
+$(window).resize(function(){
+  getRegionsDataStorage();
+});
+
+$(function () {
+  getRegionsDataStorage();
+  finishLoading();
+});
