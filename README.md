@@ -2,12 +2,15 @@
 
 Covid Status tem o intuito de apresentar a situação mundial da Covid.
 
-
 <img src="assets/readme/region-map.png" width="100%;"/><br>
+
+## Demo
+
+Acesse a demo [https://covid-status-six.vercel.app](https://covid-status-six.vercel.app)
 
 ## Integração
 
-A fonte de dados é o Dataflow Kit API, para mais informações acesse: <a href="https://covid-19.dataflowkit.com">https://covid-19.dataflowkit.com</a>
+A fonte de dados é o Dataflow Kit API, para mais informações acesse: [https://covid-19.dataflowkit.com](https://covid-19.dataflowkit.com)
 
 ## Funcionalidades
 

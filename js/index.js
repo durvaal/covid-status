@@ -1,5 +1,5 @@
 const API_BASE_URL = "https://covid-19.dataflowkit.com/v1";
-const MAPS_API_KEY = "";
+const MAPS_API_KEY = "AIzaSyAh3RiYwcqytVpa4UBr3Iy9umjSdcP4bXU";
 const COVID_STATUS_TYPE = {
   ALL: "ALL",
   WORLD: "WORLD",
