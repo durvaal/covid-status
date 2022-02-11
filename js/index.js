@@ -59,9 +59,7 @@ function loadRegionsMapChart(chartData) {
 
 function drawRegionsMap(chartData) {
   const data = google.visualization.arrayToDataTable(chartData);
-  const options = {
-    colorAxis: { colors: ["#0d6efd", "#ffc107", "#e31b23"] },
-  };
+  const options = {};
   const chart = new google.visualization.GeoChart(document.getElementById("regions-chart"));
   
   chart.draw(data, options);
