@@ -15,7 +15,9 @@ function loadMapChart(index, informations) {
 
 function drawMap(index, informations) {
   const data = google.visualization.arrayToDataTable(informations);
-  const options = {};
+  const options = {
+    legend: { textStyle: { fontSize: 12 } },
+  };
   const chart = new google.charts.Bar(document.getElementById(`region-chart-${index}`));
 
   chart.draw(data, google.charts.Bar.convertOptions(options));
